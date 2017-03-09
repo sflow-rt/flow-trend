@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flow Trend</title>
+  <link rel="stylesheet" href="../../../inc/jquery-ui/jquery-ui.structure.min.css" type="text/css">
+  <link rel="stylesheet" href="../../../inc/jquery-ui/jquery-ui.theme.css" type="text/css">
+  <link rel="stylesheet" href="../../../inc/DataTables/css/dataTables.jqueryui.css" type="text/css">
+  <link rel="stylesheet" href="../../../inc/stripchart.css" type="text/css"/>
+  <link rel="stylesheet" href="css/app.css" type="text/css">
+  <script type="text/javascript" src="../../../inc/jquery.min.js"></script>
+  <script type="text/javascript" src="../../../inc/jquery-ui/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="../../../inc/DataTables/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="../../../inc/DataTables/js/dataTables.jqueryui.min.js"></script>
+  <script type="text/javascript" src="../../../inc/jquery.stripchart.js"></script>
+  <script type="text/javascript" src="../../../inc/stripchart.js"></script>
+  <script type="text/javascript" src="js/app.js"></script>
+</head>
+<body>
+  <div id="tabs">
+    <span id="clone">
+       <button id="clone_button">New Window</button>
+    </span>
+    <ul>
+      <li><a href="#top">Flow Trend</a></li>
+      <li><a href="#settings">Settings</a></li>
+      <li><a href="#help">Help</a></li>
+    </ul>
+    <div id="top">
+      <fieldset>
+      <legend>Flow Specification</legend>
+      <div id="flowspec">
+        <input id="keys" type="text" placeholder="Keys" size="50" autocomplete="off">
+        <input id="value" type="text" placeholder="Value" size="10" autocomplete="off">
+        <input id="filter" type="text" placeholder="Filter" size="50" autocomplete="off">
+        <button id="cleardef">Clear</button>
+        <button id="submitdef">Submit</button>
+      </div>
+      </fieldset>
+      <div id="topn" class="trend"></div>
+      <table id="shortcutstable" class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Protocol</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+      </table> 
+    </div>
+    <div id="settings">
+      <fieldset>
+         <legend>Flow Shortcuts</legend>
+         <label for="numshortcuts">Shortcuts:</label>
+         <input id="numshortcuts" name="numshortcuts" size="5" readonly>
+         <button id="shortcutsrefresh">Refresh</button>
+         <input type="file" name="shortcutsfile" id="shortcutsfile" multiple="false" accept="application/json" />
+         <button id="shortcutsset">Upload</button>
+         <button id="shortcutsget">Inspect</button>
+      </fieldset>
+    </div>
+    <div id="help">
+      <div id="help-acc">
+        <div>
+          <h3>About</h3>	  
+          <div>
+            <p><em>Flow Trend</em> displays a chart of top network flows in real-time.</p>
+          </div>    
+        </div>
+        <div>
+          <h3>Monitoring top flows</h3>
+          <div>
+            <p>The <i>Flow Trend</i> tab is used to define and monitor specific flows. Flows are defined using the <i>Flow Specification</i> form.</p>
+            <dl>
+              <dt>keys:</dt><dd>list of flowkey attributes, e.g. ipsource,ipdestination</dd>
+              <dt>value:</dt><dd>Numeric flowkey attribute, e.g. <i>bps</i>, <i>fps</i>, <i>frames</i>, <i>bytes</i></dd>
+              <dt>filter:</dt><dd>boolean expression filtering flowkeys. Filter expressions are of the form &lt;flowkey&gt;&lt;operator&gt;&lt;value&gt; The = (equals), != (not equals), ~ (match regexp), and !~ (not match regexp) operators are available to compare the flowkey with a comma separated list of values. Filter expressions can be combined using &amp;, |, (, and ), e.g. (ipsource=10.0.0.1|ipdestination=10.0.0.1)&ipprotocol=1,6,17</dd>
+            </dl>
+            <p>The shortcuts table below the form contains pre-defined flow specifications. Clicking on a row in the shortcuts table enters settings in the <i>Flow Specification</i> form and starts monitoring flows. Clicking on the clear button in the <i>Flow Specification</i> form removes definition and returns the shortcuts table.</p>
+            <p>Flow specifications can be entered directly into the form. An incremental search menu lists available options when entering text into the form. Available flow keys vary depending on the traffic being monitored, but the following are the basic layer 2, 3, and 4 protocol fields that are typically present:</p>
+            <dl>
+              <dt>Ethernet</dt><dd>macsource, macdestination, ethernetprotocol, isbroadcast, ismulticast, isunicast</dd>
+              <dt>IP</dt><dd>ipsource, ipdestination, ipprotocol, iptos, ipdscp</dd>
+              <dt>TCP</dt><dd>tcpsourceport, tcpdestinationport, tcpflags</dd>
+              <dt>UDP</dt><dd>udpsourceport, udpdestinationport</dd>
+            </dl>
+            <p>Tunneling can cause fields to appear multiple times in the packet. sFlow-RT adds a suffix to the flow key to indicate depth in the protocol stack, for example, a VxLAN encapsulated IP packet would have the following attributes, macsource, ipsource, macsource.1, ipsource.1, etc. Fields with a .1 suffix are the second occurence of the field in the packet and represent the inner (tenant) addresses.</p>
+            <p>Functions of the form &lt;funcname&gt;:&lt;arg1&gt;:&ltarg2&gt;... can be applied used to define a flowkey or in a filter:</p>
+            <dl>
+              <dt>group:&lt;flowkey&gt;:&lt;fv&gt;</dt><dd>Applies the configured <i>IP Address Groups</i> to a flow key and returns the group name, e.g. group:ipsource:fv or group:ipdestination:fv</dd>
+              <dt>oui:&lt;flowkey&gt;:&ltnumber|name&gt;</dt><dd>Extracts the three octet Organizationally Unique Identifier (OUI) prefix from a MAC address, optionally looking up the assigned vendor name, e.g. oui:macsource or oui:macsource:name</dd>
+              <dt>mask:&lt;flowkey&gt;:&lt;mask_bits&gt;</dt><dd>Applies a mask to an IP address, e.g. mask:ipsource:24</dd>
+              <dt>null:&lt;flowkey&gt;:&lt;null_value&gt;</dt><dd>Allows flows to be defined with missing fields, e.g. null:vlan:undefined</dd>
+              <dt>or:&lt;flowkey1&gt;:&ltflowkey2&gt;</dt><dd>Selects the first non-null field from a list, e.g. or:ipsource:ip6source</dd>
+              <dt>eq:&lt;flowkey1&gt;:&ltflowkey2&gt;</dt><dd>Returns true if the values referenced by the flow keys are equal, e.g. eq:ipsource:ipdestination</dd>
+              <dt>range:&lt;flowkey&gt;:&ltlower&gt;:&lt;upper&gt;</dt><dd>Return true if the value is included in the range,  e.g. range:tcpsourceport:0:1023</dd>
+            </dl>
+            <p>Click on peaks in the trend chart to see values at that time. Click on items in the chart legend to drill down by adding the item to the current filter.</p>
+          </div>
+        </div>  
+        <div>
+          <h3>Settings</h3>
+            <div>
+              <p>The <i>Settings</i> tab provides access to the following option:</p>
+              <h4>Flow Shortcuts</h4>
+              <p>Shortcuts are the pre-configured flow definitions in the <i>Top Flows</i> table. Shortcuts are represented as a JSON object. The following example shows the format:</p>
+              <pre>[
+ {
+  "category": "Traffic",
+  "protocol": "IP",
+  "description": "Sources",
+  "keys": "ipsource",
+  "value": "bps",
+  "filter": ""
+ },
+ ...
+]</pre>
+            <p>The <i>Shortcuts</i> count verifies that shortcuts have been installed. Button are available to refresh the counts, upload new shortcuts, and inspect installed shortcuts.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
