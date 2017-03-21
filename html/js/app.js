@@ -22,26 +22,6 @@ $(function() {
   var state = {};
   $.extend(state,defaults);
 		
-  function nf(value,fix) {
-    var suffixes = ["\u00B5", "m", "", "K", "M", "G", "T", "P", "E"];
-    if (value === 0) return value;
-    var i = 2;
-    var divisor = 1;
-    var factor = 1000;
-    var absVal, scaled;
-    absVal = Math.abs(value);
-    while (i < suffixes.length) {
-      if ((absVal / divisor) < factor) {
-        break;
-      }
-      divisor *= factor;
-      i++;
-    }
-    scaled = Math.round(absVal * factor / divisor) / factor;
-    if(fix) scaled = scaled.toFixed(fix);
-    return scaled + suffixes[i];
-  };
-
   function createQuery(params) {
     var query, key, value;
     for(key in params) {
@@ -258,11 +238,6 @@ $(function() {
     emptyTopFlows();
   }
 
-  function updateTopFlows(data,query,scale,title) {
-    if($('#shortcutstable_wrapper').is(':visible')) return;
-
-  }
-
   var $shortcutsTable;
   function initializeShortcutsTable() {
     $shortcutsTable = $('#shortcutstable').DataTable({
@@ -305,11 +280,21 @@ $(function() {
     });
   }
 
-  function updateData(data) {
+  function updateData(data,scale) {
     if(!data 
       || !data.trend 
       || !data.trend.times 
       || data.trend.times.length == 0) return;
+
+    if(scale !== 1) {
+      var topn = data.trend.trends.topn;
+      for(var i = 0; i < topn.length; i++) {
+        var entry = topn[i];
+        for(var flow in entry) {
+          entry[flow]*=scale;
+        }
+      }
+    }
 
     if(db.trend) {
       // merge in new data
@@ -337,13 +322,12 @@ $(function() {
     var query = {keys:top_keys,value:valueToKey(top_value),filter:top_filter};
     if(db.trend && db.trend.end) query.after=db.trend.end.getTime();
     var scale = valueToScale(top_value);
-    var title = valueToTitle(top_value);
     $.ajax({
       url: topURL,
       data: query,
       success: function(data) {
         if(running_topflows) {
-          updateData(data);
+          updateData(data,scale);
           timeout_topflows = setTimeout(pollTopFlows, 1000);
         }
       },
@@ -386,9 +370,6 @@ $(function() {
     }
 
     var query = {keys:top_keys,value:valueToKey(top_value),filter:top_filter};
-    var scale = valueToScale(top_value);
-    var title = valueToTitle(top_value);
-    updateTopFlows([],query,scale,title);
     pollTopFlows();
   }
 
