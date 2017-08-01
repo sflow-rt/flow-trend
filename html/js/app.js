@@ -399,13 +399,7 @@ $(function() {
   } 
 
   function getShortcuts() {
-    $.ajax({
-      url:shortcutsURL,
-      dataType: 'json',
-      success: function(data) {
-        location.href = 'data:application/json,' + encodeURIComponent(JSON.stringify(data,null,1));
-      }
-    });
+    location.href = shortcutsURL;
   }
       
   function warningDialog(message) {
