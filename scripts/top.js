@@ -35,6 +35,7 @@ var aggMode  = getSystemProperty('flow-trend.aggMode')  || 'max';
 var maxFlows = getSystemProperty('flow-trend.maxFlows') || 10;
 var minValue = getSystemProperty('flow-trend.minValue') || 0.01;
 var agents   = getSystemProperty('flow-trend.agents')   || 'ALL';
+var t        = getSystemProperty('flow-trend.t')        || 2;
  
 var shortcuts = storeGet('shortcuts') || defaultShortcuts;
 
@@ -62,7 +63,7 @@ function flowSpec(keys,value,filter) {
     // try to create flow
     var name = 'flow_trend_' + specID;
     try {
-      setFlow(name,{keys:keysStr, value:valueStr, filter: filterStr.length > 0 ? filterStr : null, t:2, n:maxFlows, fs:SEP});
+      setFlow(name,{keys:keysStr, value:valueStr, filter: filterStr.length > 0 ? filterStr : null, t:t, n:maxFlows, fs:SEP});
       entry = {name:name, trend: new Trend(300,1)};
       entry.trend.addPoints({topn:{}});
       userFlows[key] = entry;
