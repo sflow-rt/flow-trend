@@ -408,7 +408,7 @@ $(function() {
   $('#shortcutsfile').hide().change(function(event) {
     var input = event.target;
     var reader = new FileReader();
-    $this = $(this);
+    var $this = $(this);
     reader.onload = function(){
       var text = reader.result;
       $this.wrap('<form>').closest('form').get(0).reset();
