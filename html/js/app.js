@@ -405,7 +405,7 @@ $(function() {
 
   $('#shortcutsrefresh').button({icons:{primary:'ui-icon-arrowrefresh-1-e'},text:false}).click(refreshShortcuts);
   $('#shortcutsget').button({icons:{primary:'ui-icon-search'},text:false}).click(getShortcuts);
-  $('#shortcutsfile').hide().change(function(evt) {
+  $('#shortcutsfile').hide().change(function(event) {
     var input = event.target;
     var reader = new FileReader();
     $this = $(this);
