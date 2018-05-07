@@ -26,7 +26,7 @@ var defaultShortcuts = [
 {category:'Security', protocol:'ICMP', description:'Unreachable protocols', keys:'or:ipdestination:ip6destination,icmpunreachableprotocol', value:'fps', filter:''},
 {category:'Security', protocol:'ICMP', description:'Unreachable hosts', keys:'or:ipdestination:ip6destination,icmpunreachablehost', value:'fps', filter:''},
 {category:'Security', protocol:'ICMP', description:'Unreachable networks', keys:'or:ipdestination:ip6destination,icmpunreachablenet', value:'fps', filter:''},
-{category:'Virtualization', protocol:'VxLAN', description:'Tenant VNI', keys:'vni',value:'bps',filter:''},
+{category:'Virtualization', protocol:'VxLAN', description:'Tenant VNI', keys:'vxlanvni',value:'bps',filter:''},
 {category:'Virtualization', protocol:'NVGRE', description:'Tenant VSID', keys:'grevsid', value:'bps',filter:''},
 {category:'Virtualization', protocol:'Geneve', description:'Tenant VNI', keys:'genevevni',value:'bps',filter:''}
 ];
