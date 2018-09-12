@@ -1,11 +1,12 @@
 # Real-time trend of top network flows
 
-http://blog.sflow.com/2017/09/flow-trend.html
+https://blog.sflow.com/2017/09/flow-trend.html
 
 ## To install
 
-1. Copy files to the sFlow-RT app directory.
-2. Restart sFlow-RT to load application.
+1. [Download sFlow-RT](https://sflow-rt.com/download.php)
+2. Run command: `sflow-rt/get-app.sh sflow-rt flow-trend`
+3. Restart sFlow-RT
 
 For more information, visit:
-http://www.sFlow-RT.com
+https://sFlow-RT.com
